@@ -1,0 +1,67 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+
+
+export function Login() {
+  return (
+    <div className="grid  place-items-center  h-screen bg-gray-50  lg:grid-cols-2 grid-cols-1">
+      <div className=" lg:flex hidden bg-orange-400 flex justify-center items-center w-full h-full ">
+        <h1 className="px-2 text-2xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl">
+          Welcome Back!
+        </h1>
+      </div>
+      <Card className=" w-[300px]   p-3">
+        <CardTitle className="self-center text-center mt-4">
+          <h2 className="text-xl ">Login</h2>
+        </CardTitle>
+        <CardContent className="px-3 flex flex-col justify-evenly py-3 h-60">
+          <Input placeholder="example@email.com" className="" />
+          <Input placeholder="password" />
+          <Button className="w-full hover:bg-orange-500 bg-orange-400 cursor-pointer">
+            login
+          </Button>
+        </CardContent>
+        <CardFooter>
+          <small className="text-blue-500 underline cursor-pointer">
+            signup
+          </small>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
+
+export function Signup() {
+  return (
+    <div className="grid  place-items-center  h-screen bg-gray-50  lg:grid-cols-2 grid-cols-1">
+      <div className=" lg:flex hidden bg-orange-400 flex justify-center items-center w-full h-full ">
+        <h1 className="px-2 text-2xl tracking-tighter text-balance max-lg:font-medium max-sm:px-4 sm:text-5xl lg:text-6xl xl:text-8xl">
+          Welcome
+        </h1>
+      </div>
+      <Card className=" w-[300px]   p-3">
+        <CardTitle className="self-center text-center mt-4">
+          <h2 className="text-xl ">Signup</h2>
+        </CardTitle>
+        <CardContent>
+          <form onClick={function(e){
+            e.preventDefault()
+            console.log(e.currentTarget)
+          }} className="px-3 flex flex-col justify-evenly py-3 h-60">
+            <Input placeholder="example@email.com" className="" />
+            <Input placeholder="password" />
+            <Button className="w-full hover:bg-orange-500 bg-orange-400 cursor-pointer">
+              signin
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter>
+          <small className="text-blue-500 underline cursor-pointer">
+            login
+          </small>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}
