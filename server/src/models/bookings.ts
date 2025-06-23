@@ -8,15 +8,15 @@ interface Props {
 
 export class BookingModel {
   //Save Property
-  async save({userId, propertyId}: Props) {
+  async save({ userId, propertyId }: Props) {
     try {
-      const booking = await Bookings.findOneAndUpdate(
-        { userId }, 
-        { $addToSet: { bookings: propertyId } }, 
-        { new: true, upsert: true }
+      const booking = await Bookings.updateOne(
+        { userId },
+        { $push: { bookings: propertyId } },
+        { $upset: true }
       );
 
-      return booking
+      return booking;
     } catch (error: any) {
       console.error("Error while saving data ", error.message);
       throw error;

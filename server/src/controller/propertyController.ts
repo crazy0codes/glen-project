@@ -10,6 +10,17 @@ export class PropertyController {
     this.propertyModel = propertyModel;
   }
 
+  getById = async (req: Request, res: Response) => {
+    const {id} = req.params
+    console.log(id)
+    try {
+      const property = await this.propertyModel.getById(id);
+      res.status(200).json(property);
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
   //List all properties
   getAll = async (req: Request, res: Response) => {
     try {

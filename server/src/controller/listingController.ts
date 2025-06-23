@@ -1,19 +1,19 @@
 import { Request, Response } from "express";
-import PropertyModel from "../models/propertyModel";
 import UserModel from "../models/userModel";
-import Property from "../db/schemas/propertySchema";
-import { isValidObjectId } from "mongoose";
+import { isValidObjectId, SchemaTypes } from "mongoose";
+import ListingsModel from "../models/listingModel";
+import User from "../db/schemas/userSchema";
 
-export class PropertyController {
-  propertyModel;
-  constructor(propertyModel: PropertyModel) {
-    this.propertyModel = propertyModel;
+export class ListingsController {
+  listingsModel;
+  constructor(listingsModel: ListingsModel) {
+    this.listingsModel = listingsModel;
   }
 
-  //List all properties
+  //Get all
   getAll = async (req: Request, res: Response) => {
     try {
-      const properties = await this.propertyModel.getAll();
+      const properties = await this.listingsModel.getAll();
       res.status(200).json(properties);
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
@@ -21,15 +21,15 @@ export class PropertyController {
   };
 
   //Get all listed by specific user
-  listedBy = async (req: Request, res: Response) => {
+  getById = async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
       const user = new UserModel();
-      const listedBy = (await user.findByEmail(email))?._id;
+      const userId = (await user.findByEmail(email))?._id;
       let properties;
 
-      if (isValidObjectId(listedBy)) {
-        properties = await Property.find({ listedBy });
+      if (isValidObjectId(userId) && userId) {
+        properties = await this.listingsModel.listedBy(userId);
       }
 
       res.status(200).json({
@@ -43,29 +43,7 @@ export class PropertyController {
     }
   };
 
-  //Get all booked by specifi user
-  bookedBy = async (req: Request, res: Response) => {
-    try {
-      const { email } = req.body;
-      const user = new UserModel();
-      const bookedBy = (await user.findByEmail(email))?._id;
-      let properties;
-
-      if (bookedBy) {
-        properties = await Property.find({ bookedBy });
-      }
-
-      res.status(200).json({
-        ...properties,
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
-
+  //Save property
   save = async (req: Request, res: Response) => {
     try {
       const { email, url, location, price } = req.body;
@@ -91,34 +69,55 @@ export class PropertyController {
     }
   };
 
-  buy = async (req: Request, res: Response) => {
+  //Delete property
+  delete = async (req: Request, res: Response) => {
     try {
-      const { email, propertyId } = req.body;
-
-      if (!email || !propertyId) throw new Error("All fields are required");
-
-      const user = await new UserModel().findByEmail(email);
-      if (!user?._id) throw new Error("Invalid Credentials");
-
-      const property = await Property.findByIdAndUpdate(
-        propertyId,
-        { bookedBy: user._id },
-        { new: true }
+      const { id } = req.params;
+      if (!isValidObjectId(id)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid property ID" });
+      }
+      const deleted = await this.listingsModel.delete(
+        new SchemaTypes.ObjectId(id)
       );
-
-      if (!property) throw new Error("Property not found or update failed");
-
-      res.status(200).json({
-        success: true,
-        message: property.toObject(),
-      });
+      if (!deleted) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Property not found" });
+      }
+      res
+        .status(200)
+        .json({ success: true, message: "Property deleted successfully" });
     } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  //get Details
+  getDetails = async (req: Request, res: Response) => {
+    const {id} = req.params;
+    try {
+      const details = await this.listingsModel.find(new SchemaTypes.ObjectId(id));
+      
+      if (!details) {
+        throw new Error("Property details not found");
+      }
+      if (!details.listedBy) {
+        throw new Error("Owner (listedBy) not found");
+      }
+      const owner = await User.findById(details.listedBy);
+
+      res.status(200)
+         .json({
+          ...details.toObject(),
+          owner: owner ? owner.toObject() : null
+         })
+    } 
+    catch (error: any) {
+
     }
   };
 }
 
-export default PropertyController;
+export default ListingsController;

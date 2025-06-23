@@ -24,6 +24,9 @@ import {
   WashingMachine,
   Wifi,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import type { Property } from "./homeView";
 
 const propertyImages = [
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c", // House exterior
@@ -31,9 +34,27 @@ const propertyImages = [
   "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2", // Kitchen
 ];
 
+
 export function PropertyDetailView() {
+  const params = useParams();
+  const [property, setProperty] = useState<Property | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      console.log(params)
+      const property = await fetch(
+        `http://localhost:3001/api/property/details/${params.id}`
+      );
+      const data = await property.json();
+      console.log(data)
+      setProperty(data);
+    }
+
+    fetchData();
+  }, [params]);
+
   return (
-    <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-6 m-16 px-6">
+    <div key={property?._id} className="grid lg:grid-cols-2 md:grid-cols-1 gap-6 m-16 px-6">
       <div className="grid grid-cols-1 auto-rows-auto gap-6">
         <div className="relative">
           <Carousel className="max-w-full">
@@ -72,7 +93,7 @@ export function PropertyDetailView() {
           </Card>
 
           <Card className="shadow-lg p-6">
-            <CardTitle className="text-4xl mb-2">Apartment - Tanuku</CardTitle>
+            <CardTitle className="text-4xl mb-2">{property?.location}</CardTitle>
             <Separator />
             <CardDescription className="py-4">
               <p className="text-black text-base">
@@ -120,14 +141,14 @@ export function PropertyDetailView() {
               // classNames={{
               //   day : "p-2"
               // }}
-              
+
               className="sticky w-full top-0 rounded-lg border bg-black text-white shadow-sm p-4"
             />
           </CardContent>
         </Card>
         <Card className="h-min mt-6 p-3">
           <CardTitle className="ml-5 p-2">
-            <p>$223 for Night</p>
+            <p>${property?.price} for Night</p>
           </CardTitle>
           <CardContent>
             <table className="table-auto border bg-gray-200 rounded overflow-hidden w-full my-2">

@@ -34,7 +34,7 @@ export class ListingsModel {
   }
 
   //Listed by user
-  async listedBy(listedBy:string){
+  async listedBy(listedBy:Types.ObjectId){
     try {
         return await Listings.find({listedBy});
     }
@@ -55,6 +55,16 @@ export class ListingsModel {
     }
   }
 
+  //Find by Id
+  async find(_id:ObjectId){
+    try {
+      return await Listings.findById({_id});
+    }
+    catch(error: any){
+      console.log(error)
+      throw error;
+    }
+  }
 }
 
 

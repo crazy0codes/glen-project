@@ -3,11 +3,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Separator,
 } from "@radix-ui/react-dropdown-menu";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link } from "react-router-dom";
-import { Home, User2Icon } from "lucide-react";
+import {
+  Home,
+  User2Icon,
+} from "lucide-react";
 
 export function Navbar() {
   return (
@@ -28,17 +32,33 @@ export function Navbar() {
         </Link>
         <li>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="p-5 rounded-full">
+            <DropdownMenuTrigger asChild className="cursor-pointer">
+              <Button className="p-5  rounded-full">
                 <User2Icon />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>
-                <Link to={"/login"}>login</Link>
+            <DropdownMenuContent className="bg-white p-3 rounded">
+              <DropdownMenuItem className="hover:outline-none">
+                <Link
+                  to={"/login"}
+                  className="flex items-center hover:border-none hover:underline"
+                >
+                  <p>login</p>
+                  <Separator />
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:outline-none">
+                <Link
+                  to={"/signup"}
+                  className="hover:outline-none hover:underline"
+                >
+                  <p>register</p>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link to={"/signup"}>signup</Link>
+                <Link to={"/dashboard"} className="hover:underline">
+                  dashboard
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
