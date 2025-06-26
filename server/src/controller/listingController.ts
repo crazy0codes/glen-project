@@ -71,35 +71,122 @@ export class ListingsController {
   //Delete property
   delete = async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
-      if (!isValidObjectId(id)) {
-        return res
+      const { propertyId } = req.body;
+      const { role, id: userId } = (req as any).user;
+
+      // Validate ID
+      if (!isValidObjectId(propertyId)) {
+        res
           .status(400)
           .json({ success: false, message: "Invalid property ID" });
       }
-      const deleted = await this.listingsModel.delete(
-        new mongoose.Types.ObjectId(id)
-      );
-      if (!deleted) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Property not found" });
+
+      // Find property by ID
+      const property = await this.listingsModel.getById(propertyId);
+
+      if (!property) {
+        res.status(404).json({ success: false, message: "Property not found" });
       }
-      res
-        .status(200)
-        .json({ success: true, message: "Property deleted successfully" });
+
+      // Admins can delete anything
+      if (role === "admin") {
+        await this.listingsModel.delete(propertyId);
+        res
+          .status(200)
+          .json({ success: true, message: "Property deleted by admin" });
+      }
+
+      // Users can only delete their own properties
+      if (role === "user" && property) {
+        const isOwner = property.listedBy?.toString() === userId;
+
+        if (!isOwner) {
+          res.status(403).json({
+            success: false,
+            message: "You are not authorized to delete this property",
+          });
+        }
+
+        await this.listingsModel.delete(propertyId);
+        res
+          .status(200)
+          .json({ success: true, message: "Property deleted by user" });
+      }
+
+      res.status(403).json({
+        success: false,
+        message: "Unauthorized action",
+      });
     } catch (error: any) {
+      console.error(error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  //Delete property
+  update = async (req: Request, res: Response) => {
+    try {
+      const { propertyId, price, location, description} = req.body;
+      const { role, id: userId } = (req as any).user;
+
+      // Validate ID
+      if (!isValidObjectId(propertyId)) {
+        res
+          .status(400)
+          .json({ success: false, message: "Invalid property ID" });
+      }
+
+      // Find property by ID
+      const property = await this.listingsModel.getById(propertyId);
+
+      if (!property) {
+        res.status(404).json({ success: false, message: "Property not found" });
+      }
+
+      // Admins can delete anything
+      if (role === "admin") {
+        await this.listingsModel.update({propertyId, location, price});
+        res
+          .status(200)
+          .json({ success: true, message: "Property updated by admin" });
+      }
+
+      // Users can only delete their own properties
+      if (role === "user" && property) {
+        const isOwner = property.listedBy?.toString() === userId;
+
+        if (!isOwner) {
+          res.status(403).json({
+            success: false,
+            message: "You are not authorized to update this property",
+          });
+        }
+
+        await this.listingsModel.update({propertyId, location, price});
+        res
+          .status(200)
+          .json({ success: true, message: "Property updated by user" });
+      }
+
+      res.status(403).json({
+        success: false,
+        message: "Unauthorized action",
+      });
+    } catch (error: any) {
+      console.error(error);
       res.status(500).json({ success: false, message: error.message });
     }
   };
 
   //get Details
   getDetails = async (req: Request, res: Response) => {
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
-      const details = await this.listingsModel.find(new mongoose.Types.ObjectId(id));
-      
+      const details = await this.listingsModel.getById(
+        new mongoose.Types.ObjectId(id)
+      );
+
       if (!details) {
         throw new Error("Property details not found");
       }
@@ -108,18 +195,15 @@ export class ListingsController {
       }
       const owner = await User.findById(details.listedBy);
 
-      res.status(200)
-         .json({
-          ...details.toObject(),
-          owner: owner ? owner.toObject() : null
-         })
-    } 
-    catch (error: any) {
-      res.status(500)
-         .json({
-          success: false,
-          message: error.message
-         })
+      res.status(200).json({
+        ...details.toObject(),
+        owner: owner ? owner.toObject() : null,
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
     }
   };
 }

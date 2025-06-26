@@ -27,4 +27,6 @@ router.get("/bookedBy",authenticate, authorizeRoles("admin","user"), bookingsCon
 router.post("/upload",authenticate,authorizeRoles("admin", "user"),listingsController.save);
 router.post("/bookings",authenticate,authorizeRoles("admin", "user"),bookingsController.save);
 
+router.delete("/listing", authenticate, authorizeRoles("admin","user"), listingsController.delete);
+router.patch("/listing", authenticate, authorizeRoles("admin","user"), listingsController.update)
 export default router;

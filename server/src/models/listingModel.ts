@@ -1,8 +1,9 @@
 import mongoose, { ObjectId, Types, isValidObjectId } from "mongoose";
 import Listings from "../db/schemas/listingSchema";
 
-interface Props {
-  listedBy: Types.ObjectId;
+export interface Props {
+  propertyId?: mongoose.Types.ObjectId,
+  listedBy: mongoose.Types.ObjectId;
   url: string;
   location: string;
   price: number;
@@ -53,7 +54,7 @@ export class ListingsModel {
   }
 
   // Get listing by ID (for details)
-  async getById(id: string) {
+  async getById(id:mongoose.Types.ObjectId ) {
     try {
       const objectId = isValidObjectId(id) ? new mongoose.Types.ObjectId(id) : null;
       if (!objectId) throw new Error("Invalid ObjectId format");
@@ -63,6 +64,21 @@ export class ListingsModel {
       throw error;
     }
   }
+
+  async update({ propertyId, location, price }: Props) {
+    try {
+      const updatedListing = await Listings.findByIdAndUpdate(
+        propertyId,
+        { location, price },
+        { new: true }
+      );
+      return updatedListing;
+    } catch (error: any) {
+      console.error("Error while updating listing:", error.message);
+      throw error;
+    }
+  }
+
 }
 
 export default ListingsModel;
