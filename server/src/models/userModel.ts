@@ -1,8 +1,9 @@
 import User from "../db/schemas/userSchema"
 
 type saveProps = {
-  email: String;
-  password: String;
+  email: string;
+  password: string;
+  role?: "admin" | "user";
 };
 
 class UserModel {

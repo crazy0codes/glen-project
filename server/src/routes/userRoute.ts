@@ -4,8 +4,8 @@ import { userController } from "../controller/indexController";
 const router = Router();
 
 //User related routes
-router.post("/create", userController.createUser);
-router.get("/:id", userController.getUserByEmail);
+router.post("/register", userController.save);
+router.post("/login", userController.verify);
 
 export default router;
 

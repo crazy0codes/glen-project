@@ -12,7 +12,6 @@ export class PropertyController {
 
   getById = async (req: Request, res: Response) => {
     const {id} = req.params
-    console.log(id)
     try {
       const property = await this.propertyModel.getById(id);
       res.status(200).json(property);
@@ -94,7 +93,7 @@ export class PropertyController {
 
       res.status(201).json(property.toObject());
     } catch (error: any) {
-      console.log(error);
+      
       res.status(500).json({
         success: false,
         messsage: error.message,

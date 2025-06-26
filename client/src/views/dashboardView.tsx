@@ -9,14 +9,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
+import type { Property } from "@/container/homePageContainer";
 import { useState } from "react";
 
 interface Props {
-  user: string;
+  user: "admin" | "user";
+  properties: Property[] | null;
+  deleteHandler: (id: string) => Promise<void>;
+  updateHandler: (id: string, data: Partial<Property>) => Promise<void>;
 }
 
-export function Dashboard({ user }: Props) {
-  //   user = ""
+export function Dashboard({
+  updateHandler,
+  deleteHandler,
+  properties,
+  user,
+}: Props) {
   const [price, setPrice] = useState(0);
   return (
     <div className="m-6 p-4 min-h-[95vh]  border border-black border-2">
@@ -77,10 +85,10 @@ export function Dashboard({ user }: Props) {
         </Dialog>
       </div>
       <div className="flex flex-wrap gap-2">
-        {[4, 5].map((ele) => (
+        {properties?.map((property) => (
           <Dialog>
             <DialogTrigger>
-              <PropertyCard className="cursor-pointer"  key={ele} />
+              <PropertyCard {...property} />
             </DialogTrigger>
             <DialogContent>
               <form className="grid gap-2">

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../models/userModel";
 import Bookings from "../db/schemas/bookingsSchemas";
 import BookingModel from "../models/bookings";
+import mongoose from "mongoose";
 
 export class BookingsController {
   bookingsModel;
@@ -11,6 +12,7 @@ export class BookingsController {
 
   //Get all booked by specific user
   getById = async (req: Request, res: Response) => {
+    console.log("Searching for your reservations...")
     try {
       const { email } = req.body;
       const user = new UserModel();
@@ -20,6 +22,8 @@ export class BookingsController {
       if (userId) {
         properties = await Bookings.find({ userId });
       }
+
+      console.log(properties)
 
       res.status(200).json({
         ...properties,
@@ -42,11 +46,14 @@ export class BookingsController {
       const userId = (await new UserModel().findByEmail(email))?._id;
       if (!userId) throw new Error("Invalid Credentials");
 
-      const result = await this.bookingsModel.save({userId,propertyId});
+        new mongoose.Types.ObjectId(userId);
 
-      if (result.modifiedCount === 0 && !result.upsertedCount) {
-        throw new Error("Property reservation failed");
-      }
+      const result = await this.bookingsModel.save({userId: new mongoose.Types.ObjectId(userId),propertyId : new mongoose.Types.ObjectId(propertyId)});
+
+
+      // if (result.modifiedCount === 0 && !result.upsertedCount) {
+      //   throw new Error("Property reservation failed");
+      // }
 
       res.status(200).json({
         success: true,

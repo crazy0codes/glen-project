@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../models/userModel";
-import { isValidObjectId, SchemaTypes } from "mongoose";
+import mongoose, { isValidObjectId, Mongoose, SchemaTypes } from "mongoose";
 import ListingsModel from "../models/listingModel";
 import User from "../db/schemas/userSchema";
 
@@ -52,7 +52,7 @@ export class ListingsController {
 
       if (!listedBy) throw new Error("No user found");
 
-      const property = await this.propertyModel.save({
+      const property = await this.listingsModel.save({
         url,
         price,
         listedBy,
@@ -61,7 +61,6 @@ export class ListingsController {
 
       res.status(201).json(property.toObject());
     } catch (error: any) {
-      console.log(error);
       res.status(500).json({
         success: false,
         messsage: error.message,
@@ -79,7 +78,7 @@ export class ListingsController {
           .json({ success: false, message: "Invalid property ID" });
       }
       const deleted = await this.listingsModel.delete(
-        new SchemaTypes.ObjectId(id)
+        new mongoose.Types.ObjectId(id)
       );
       if (!deleted) {
         return res
@@ -97,9 +96,9 @@ export class ListingsController {
   //get Details
   getDetails = async (req: Request, res: Response) => {
     const {id} = req.params;
-    console.log(id)
+
     try {
-      const details = await this.listingsModel.find(new SchemaTypes.ObjectId(id));
+      const details = await this.listingsModel.find(new mongoose.Types.ObjectId(id));
       
       if (!details) {
         throw new Error("Property details not found");
@@ -116,7 +115,11 @@ export class ListingsController {
          })
     } 
     catch (error: any) {
-
+      res.status(500)
+         .json({
+          success: false,
+          message: error.message
+         })
     }
   };
 }

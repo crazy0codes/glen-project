@@ -15,26 +15,29 @@ import {
 
 export function Navbar() {
   return (
-    <nav className="flex justify-around items-center bg-orange-500 px-10 py-5">
-      <h1 className=" w-full text-2xl font-medium ">Property Finder</h1>
+    // bg-linear-to-r/longer from-indigo-200
+    <nav className="  flex justify-around items-center border border-b-gray-400 px-10 py-5">
+      <h1 className=" w-full text-4xl tracking-tighter font-medium ">
+        <Link to={"/"}>Property Finder</Link>
+      </h1>
       <ul className="flex justify-around items-center">
-        <li>
+        <li className="mr-3">
           <form onSubmit={(e) => e.preventDefault()}>
             <Input
               type="text"
-              className="bg-gray-100 rounded-full"
+              className="bg-gray-100 w-45 rounded-full border border-gray-400"
               placeholder="Search"
             />
           </form>
         </li>
-        <Link to={"/"} className="rounded-full bg-white p-2">
+        {/* <Link to={"/"} className="rounded-full bg-white p-2">
           <Home />
-        </Link>
+        </Link> */}
         <li>
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="cursor-pointer">
-              <Button className="p-5  rounded-full">
-                <User2Icon />
+              <Button className="bg-transparent hover:bg-gray-300 border border-gray-300 h-[44px] w-[44px] rounded-full">
+                <User2Icon className="text-black size-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white p-3 rounded">

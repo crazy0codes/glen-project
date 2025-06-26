@@ -1,12 +1,13 @@
 import "./App.css";
+import { AuthProvider } from "./context/authContext";
 import { AppBrowser } from "./routes";
 // import { Dashboard } from "./views/dashboardView";
 
-
-
 function App() {
   return (
-    <AppBrowser />
+    <AuthProvider>
+      <AppBrowser />
+    </AuthProvider>
   );
 }
 

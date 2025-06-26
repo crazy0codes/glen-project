@@ -1,5 +1,5 @@
-import { HomeView } from "@/views/homeView";
+import { HomePageContainer } from "@/container/homePageContainer";
 
 export function HomePage(){
-    return <HomeView/>
+    return <HomePageContainer/>
 }

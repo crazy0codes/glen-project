@@ -1,21 +1,19 @@
-import { ObjectId, Types } from "mongoose";
+import mongoose, { ObjectId, Types } from "mongoose";
 import Bookings from "../db/schemas/bookingsSchemas";
 
 interface Props {
-  userId: Types.ObjectId;
-  propertyId: Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  propertyId: mongoose.Types.ObjectId;
 }
 
 export class BookingModel {
   //Save Property
   async save({ userId, propertyId }: Props) {
     try {
-      const booking = await Bookings.updateOne(
-        { userId },
-        { $push: { bookings: propertyId } },
-        { $upset: true }
-      );
-
+      const booking = await Bookings.create({
+        userId,
+        propertyId
+      });
       return booking;
     } catch (error: any) {
       console.error("Error while saving data ", error.message);

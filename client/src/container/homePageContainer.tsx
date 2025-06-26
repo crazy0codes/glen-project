@@ -1,25 +1,35 @@
-import { useEffect, useState } from "react"
+import { HomeView } from "@/views/homeView";
+import { useEffect, useState } from "react";
 
-
-async function fetchProperties() {
-    
-   const fetched = await fetch(`http://localhost:3001/properties`)
-   const data = await fetched.json();
-   
-   return data;
+export interface Property {
+  _id: string;
+  url: string;
+  price: string;
+  location: string;
+  bookedBy: string;
+  description: string;
+  owner: {
+    email:string,
+    _id: string
+  }
 }
 
+export function HomePageContainer() {
+  const [properties, setProperties] = useState<Property[] | null>(null);
 
-export function HomePageContainer(){
-    const [properties, setProperties] = useState([]);
-    useEffect(() => {
-        fetchProperties().then(data => {
-            setProperties(data);
-        })
-    }, [])
+  useEffect(() => {
+    async function fetchProperties() {
+      const fetched = await fetch(`http://localhost:3001/api/property/`);
+      const data: Property[] = await fetched.json();
+      setProperties(data);
+    }
 
-    return (
-        <>
-        </>
-    )
+    fetchProperties();
+  }, []);
+
+  return (
+    <>
+      <HomeView properties={properties} />
+    </>
+  );
 }

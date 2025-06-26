@@ -9,7 +9,7 @@ const routes = (
   <Routes>
     <Route path="/" element={<Layout />}>
       <Route index element={<HomePage/>} />
-      <Route path="details/:id" element={<DetailedPage />} />
+      <Route path="listings/:id" element={<DetailedPage />} />
       <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />
       <Route path="dashboard" element={<UserDashboardPage />} />

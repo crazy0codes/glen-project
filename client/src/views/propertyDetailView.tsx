@@ -15,6 +15,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
+import type { Property } from "@/container/homePageContainer";
 import {
   Bed,
   CookingPot,
@@ -26,7 +27,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { Property } from "./homeView";
 
 const propertyImages = [
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c", // House exterior
@@ -43,7 +43,7 @@ export function PropertyDetailView() {
     async function fetchData() {
       console.log(params)
       const property = await fetch(
-        `http://localhost:3001/api/property/details/${params.id}`
+        `http://localhost:3001/api/property/listings/${params.id}`
       );
       const data = await property.json();
       console.log(data)
@@ -85,7 +85,7 @@ export function PropertyDetailView() {
               />
               <CardHeader className="ml-4">
                 <CardTitle>
-                  <h3 className="text-lg font-semibold">Hosted by Jon Snow</h3>
+                  <h3 className="text-lg font-semibold">{property?.owner.email}</h3>
                   <small className="text-gray-500 font-normal">Live</small>
                 </CardTitle>
               </CardHeader>
@@ -97,10 +97,7 @@ export function PropertyDetailView() {
             <Separator />
             <CardDescription className="py-4">
               <p className="text-black text-base">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus
-                veritatis molestias, hic consectetur aspernatur adipisci? Dolore
-                harum ut sunt et sit exercitationem a porro inventore. Fugit
-                quibusdam eaque sit maxime.
+                {property?.description}
               </p>
             </CardDescription>
 

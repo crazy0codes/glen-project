@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import type { Property } from "@/views/homeView";
+import type { Property } from "@/container/homePageContainer";
 
 interface Props extends Property {
   className?: string;

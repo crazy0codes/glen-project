@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import type { FormEvent } from "react";
 
+interface Submit {
+  loginHandler?: (e: FormEvent<HTMLFormElement>) => void;
+  signupHandler?: (e: FormEvent<HTMLFormElement>) => void;
+}
 
-export function Login() {
+export function Login({ loginHandler }: Submit) {
   return (
     <div className="grid  place-items-center  h-screen bg-gray-50  lg:grid-cols-2 grid-cols-1">
       <div className=" lg:flex hidden bg-orange-400 flex justify-center items-center w-full h-full ">
@@ -16,11 +21,21 @@ export function Login() {
           <h2 className="text-xl ">Login</h2>
         </CardTitle>
         <CardContent className="px-3 flex flex-col justify-evenly py-3 h-60">
-          <Input placeholder="example@email.com" className="" />
-          <Input placeholder="password" />
-          <Button className="w-full hover:bg-orange-500 bg-orange-400 cursor-pointer">
-            login
-          </Button>
+          <form onSubmit={loginHandler}>
+            <Input
+              name="email"
+              type="text"
+              placeholder="example@email.com"
+              className=""
+            />
+            <Input name="password" type="text" placeholder="password" />
+            <Button
+              type="submit"
+              className="w-full hover:bg-orange-500 bg-orange-400 cursor-pointer"
+            >
+              login
+            </Button>
+          </form>
         </CardContent>
         <CardFooter>
           <small className="text-blue-500 underline cursor-pointer">
@@ -32,7 +47,7 @@ export function Login() {
   );
 }
 
-export function Signup() {
+export function Signup({ signupHandler }: Submit) {
   return (
     <div className="grid  place-items-center  h-screen bg-gray-50  lg:grid-cols-2 grid-cols-1">
       <div className=" lg:flex hidden bg-orange-400 flex justify-center items-center w-full h-full ">
@@ -45,10 +60,10 @@ export function Signup() {
           <h2 className="text-xl ">Signup</h2>
         </CardTitle>
         <CardContent>
-          <form onClick={function(e){
-            e.preventDefault()
-            console.log(e.currentTarget)
-          }} className="px-3 flex flex-col justify-evenly py-3 h-60">
+          <form
+            onClick={signupHandler}
+            className="px-3 flex flex-col justify-evenly py-3 h-60"
+          >
             <Input placeholder="example@email.com" className="" />
             <Input placeholder="password" />
             <Button className="w-full hover:bg-orange-500 bg-orange-400 cursor-pointer">
