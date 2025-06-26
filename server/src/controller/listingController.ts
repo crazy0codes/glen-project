@@ -97,6 +97,7 @@ export class ListingsController {
   //get Details
   getDetails = async (req: Request, res: Response) => {
     const {id} = req.params;
+    console.log(id)
     try {
       const details = await this.listingsModel.find(new SchemaTypes.ObjectId(id));
       
