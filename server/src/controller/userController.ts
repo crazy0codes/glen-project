@@ -15,8 +15,8 @@ class UserController {
       const { email, password, role = "user" } = req.body;
 
       const existing = await this.userModel.findByEmail(email);
-      if (existing) return res.status(409).json({ message: "Email already exists" });
-
+      if (existing)  res.status(409).json({ message: "Email already exists" });
+      
       const hashedPassword = await generateHash(password);
       const newUser = await this.userModel.save({
         email,

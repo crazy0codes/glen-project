@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import {
   bookingsController,
   listingsController,
-  propertyController,
 } from "../controller/indexController";
 import { authenticate, authorizeRoles } from "../middlewares/authMiddleware";
 
@@ -22,7 +21,7 @@ const router = Router();
 //Listings
 router.get("/", listingsController.getAll);
 router.get("/listings/:id", listingsController.getDetails);
-router.get("/listedBy/:listedBy", listingsController.getById);
+router.get("/listedBy/:id",authenticate, authorizeRoles("admin", "user"), listingsController.getById);
 router.get("/bookedBy",authenticate, authorizeRoles("admin","user"), bookingsController.getById);
 router.post("/upload",authenticate,authorizeRoles("admin", "user"),listingsController.save);
 router.post("/bookings",authenticate,authorizeRoles("admin", "user"),bookingsController.save);

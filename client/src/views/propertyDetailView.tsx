@@ -85,7 +85,7 @@ export function PropertyDetailView() {
               />
               <CardHeader className="ml-4">
                 <CardTitle>
-                  <h3 className="text-lg font-semibold">{property?.owner.email}</h3>
+                  <h3 className="text-lg font-semibold">{property?.owner?.email}</h3>
                   <small className="text-gray-500 font-normal">Live</small>
                 </CardTitle>
               </CardHeader>

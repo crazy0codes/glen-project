@@ -1,10 +1,5 @@
-import { Dashboard } from "@/views/dashboardView";
+import { DashboardContainer } from "@/container/dashboardContainer";
 
-
-export function AdminDashboardPage(){
-    return <Dashboard user="admin"/>
-}
-
-export function UserDashboardPage(){
-    return <Dashboard user="user" />
+export function DashboardPage() {
+  return <DashboardContainer />;
 }

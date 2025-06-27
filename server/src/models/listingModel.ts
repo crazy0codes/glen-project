@@ -2,15 +2,16 @@ import mongoose, { ObjectId, Types, isValidObjectId } from "mongoose";
 import Listings from "../db/schemas/listingSchema";
 
 export interface Props {
-  propertyId?: mongoose.Types.ObjectId,
+  propertyId?: mongoose.Types.ObjectId;
   listedBy: mongoose.Types.ObjectId;
   url: string;
   location: string;
   price: number;
+  name?: string;
+  description?: string;
 }
 
 export class ListingsModel {
-  // Save Property
   async save(propertyData: Props) {
     try {
       const newProperty = new Listings(propertyData);
@@ -21,7 +22,6 @@ export class ListingsModel {
     }
   }
 
-  // Get all properties
   async getAll() {
     try {
       return await Listings.find();
@@ -31,7 +31,6 @@ export class ListingsModel {
     }
   }
 
-  // Get properties listed by a specific user
   async listedBy(listedBy: Types.ObjectId) {
     try {
       return await Listings.find({ listedBy });
@@ -41,10 +40,9 @@ export class ListingsModel {
     }
   }
 
-  // Delete a listing by ID (ObjectId or string)
   async delete(id: string) {
     try {
-      const objectId = isValidObjectId(id) ? new  mongoose.Types.ObjectId(id) : null;
+      const objectId = isValidObjectId(id) ? new mongoose.Types.ObjectId(id) : null;
       if (!objectId) throw new Error("Invalid ObjectId format");
       return await Listings.findByIdAndDelete(objectId);
     } catch (error: any) {
@@ -53,10 +51,9 @@ export class ListingsModel {
     }
   }
 
-  // Get listing by ID (for details)
-  async getById(id:mongoose.Types.ObjectId ) {
+  async getById(id: mongoose.Types.ObjectId | string) {
     try {
-      const objectId = isValidObjectId(id) ? new mongoose.Types.ObjectId(id) : null;
+      const objectId = typeof id === 'string' ? (isValidObjectId(id) ? new mongoose.Types.ObjectId(id) : null) : id;
       if (!objectId) throw new Error("Invalid ObjectId format");
       return await Listings.findById(objectId);
     } catch (error: any) {
@@ -65,11 +62,14 @@ export class ListingsModel {
     }
   }
 
-  async update({ propertyId, location, price }: Props) {
+  async update(propertyId: string, updateData: Partial<Props>) {
     try {
+      const objectId = isValidObjectId(propertyId) ? new mongoose.Types.ObjectId(propertyId) : null;
+      if (!objectId) throw new Error("Invalid ObjectId format");
+
       const updatedListing = await Listings.findByIdAndUpdate(
-        propertyId,
-        { location, price },
+        objectId,
+        updateData,
         { new: true }
       );
       return updatedListing;
@@ -78,7 +78,6 @@ export class ListingsModel {
       throw error;
     }
   }
-
 }
 
 export default ListingsModel;

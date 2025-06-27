@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { FormEvent } from "react";
 
@@ -21,7 +21,7 @@ export function Login({ loginHandler }: Submit) {
           <h2 className="text-xl ">Login</h2>
         </CardTitle>
         <CardContent className="px-3 flex flex-col justify-evenly py-3 h-60">
-          <form onSubmit={loginHandler}>
+          <form onSubmit={loginHandler} className="flex flex-col gap-3">
             <Input
               name="email"
               type="text"
@@ -37,11 +37,11 @@ export function Login({ loginHandler }: Submit) {
             </Button>
           </form>
         </CardContent>
-        <CardFooter>
+        {/* <CardFooter>
           <small className="text-blue-500 underline cursor-pointer">
             signup
           </small>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </div>
   );
@@ -61,21 +61,21 @@ export function Signup({ signupHandler }: Submit) {
         </CardTitle>
         <CardContent>
           <form
-            onClick={signupHandler}
+            onSubmit={signupHandler}
             className="px-3 flex flex-col justify-evenly py-3 h-60"
           >
-            <Input placeholder="example@email.com" className="" />
-            <Input placeholder="password" />
-            <Button className="w-full hover:bg-orange-500 bg-orange-400 cursor-pointer">
+            <Input name="email" placeholder="example@email.com" className="" />
+            <Input name="password" placeholder="password" />
+            <Button type="submit"  className="w-full hover:bg-orange-500 bg-orange-400 cursor-pointer">
               signin
             </Button>
           </form>
         </CardContent>
-        <CardFooter>
+        {/* <CardFooter>
           <small className="text-blue-500 underline cursor-pointer">
             login
           </small>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </div>
   );

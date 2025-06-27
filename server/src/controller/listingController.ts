@@ -16,6 +16,7 @@ export class ListingsController {
       const properties = await this.listingsModel.getAll();
       res.status(200).json(properties);
     } catch (error: any) {
+      console.log(error);
       res.status(500).json({ success: false, message: error.message });
     }
   };
@@ -23,18 +24,13 @@ export class ListingsController {
   //Get all listed by specific user
   getById = async (req: Request, res: Response) => {
     try {
-      const { email } = req.body;
-      const user = new UserModel();
-      const userId = (await user.findByEmail(email))?._id;
       let properties;
-
-      if (isValidObjectId(userId) && userId) {
-        properties = await this.listingsModel.listedBy(userId);
+      const { id } = (req as any).user;
+      if (isValidObjectId(id) && id) {
+        properties = await this.listingsModel.listedBy(id);
       }
 
-      res.status(200).json({
-        ...properties,
-      });
+      res.status(200).json(properties);
     } catch (error: any) {
       res.status(500).json({
         success: false,
@@ -69,26 +65,79 @@ export class ListingsController {
   };
 
   //Delete property
+  // delete = async (req: Request, res: Response) => {
+  //   try {
+  //     const { propertyId } = req.body;
+  //     const { role, id: userId } = (req as any).user;
+
+  //     // Validate ID
+  //     if (!isValidObjectId(propertyId)) {
+  //       res
+  //         .status(400)
+  //         .json({ success: false, message: "Invalid property ID" });
+  //     }
+
+  //     // Find property by ID
+  //     const property = await this.listingsModel.getById(propertyId);
+
+  //     if (!property) {
+  //       res.status(404).json({ success: false, message: "Property not found" });
+  //     }
+
+  //     // Admins can delete anything
+  //     if (role === "admin") {
+  //       await this.listingsModel.delete(propertyId);
+  //       res
+  //         .status(200)
+  //         .json({ success: true, message: "Property deleted by admin" });
+  //     }
+
+  //     // Users can only delete their own properties
+  //     if (role === "user" && property) {
+  //       const isOwner = property.listedBy?.toString() === userId;
+
+  //       if (!isOwner) {
+  //         res.status(403).json({
+  //           success: false,
+  //           message: "You are not authorized to delete this property",
+  //         });
+  //       }
+
+  //       await this.listingsModel.delete(propertyId);
+  //       res
+  //         .status(200)
+  //         .json({ success: true, message: "Property deleted by user" });
+  //     }
+
+  //     res.status(403).json({
+  //       success: false,
+  //       message: "Unauthorized action",
+  //     });
+  //   } catch (error: any) {
+  //     console.error(error);
+  //     res.status(500).json({ success: false, message: error.message });
+  //   }
+  // };
+
   delete = async (req: Request, res: Response) => {
     try {
       const { propertyId } = req.body;
       const { role, id: userId } = (req as any).user;
 
-      // Validate ID
       if (!isValidObjectId(propertyId)) {
         res
           .status(400)
           .json({ success: false, message: "Invalid property ID" });
       }
 
-      // Find property by ID
       const property = await this.listingsModel.getById(propertyId);
 
       if (!property) {
-        res.status(404).json({ success: false, message: "Property not found" });
+        res
+          .status(404)
+          .json({ success: false, message: "Property not found" });
       }
 
-      // Admins can delete anything
       if (role === "admin") {
         await this.listingsModel.delete(propertyId);
         res
@@ -96,7 +145,6 @@ export class ListingsController {
           .json({ success: true, message: "Property deleted by admin" });
       }
 
-      // Users can only delete their own properties
       if (role === "user" && property) {
         const isOwner = property.listedBy?.toString() === userId;
 
@@ -111,23 +159,69 @@ export class ListingsController {
         res
           .status(200)
           .json({ success: true, message: "Property deleted by user" });
-      }
-
-      res.status(403).json({
-        success: false,
-        message: "Unauthorized action",
-      });
+      };
     } catch (error: any) {
       console.error(error);
       res.status(500).json({ success: false, message: error.message });
     }
   };
 
-  //Delete property
+  //Update Property
+  // update = async (req: Request, res: Response) => {
+  //   try {
+  //     const { propertyId, price, location, description} = req.body;
+  //     const { role, id: userId } = (req as any).user;
+
+  //     // Validate ID
+  //     if (!isValidObjectId(propertyId)) {
+  //       res
+  //         .status(400)
+  //         .json({ success: false, message: "Invalid property ID" });
+  //     }
+
+  //     // Find property by ID
+  //     const property = await this.listingsModel.getById(propertyId);
+
+  //     if (!property) {
+  //       res.status(404).json({ success: false, message: "Property not found" });
+  //     }
+
+  //     // Admins can delete anything
+  //     if (role === "admin") {
+  //       await this.listingsModel.update({propertyId, location, price});
+  //       res
+  //         .status(200)
+  //         .json({ success: true, message: "Property updated by admin" });
+  //     }
+
+  //     // Users can only delete their own properties
+  //     if (role === "user" && property) {
+  //       const isOwner = property.listedBy?.toString() === userId;
+
+  //       if (!isOwner) {
+  //         res.status(403).json({
+  //           success: false,
+  //           message: "You are not authorized to update this property",
+  //         });
+  //       }
+
+  //       const updatedProperty = await this.listingsModel.update({propertyId, location, price});
+  //       res
+  //         .status(200)
+  //         .json({ success: true, message: "Property updated by user" , property: updatedProperty});
+  //     }
+
+  //   } catch (error: any) {
+  //     console.error(error);
+  //     res.status(500).json({ success: false, message: error.message });
+  //   }
+  // };
+
+  // Update Property
   update = async (req: Request, res: Response) => {
     try {
-      const { propertyId, price, location, description} = req.body;
-      const { role, id: userId } = (req as any).user;
+      const { propertyId, price, location, description } = req.body;
+      const { role, id: userId } = (req as any).user; // Assuming (req as any).user correctly extracts user and role
 
       // Validate ID
       if (!isValidObjectId(propertyId)) {
@@ -137,21 +231,50 @@ export class ListingsController {
       }
 
       // Find property by ID
-      const property = await this.listingsModel.getById(propertyId);
+      const property = await this.listingsModel.getById(
+        new mongoose.Types.ObjectId(propertyId)
+      ); // Pass ObjectId
 
       if (!property) {
-        res.status(404).json({ success: false, message: "Property not found" });
-      }
-
-      // Admins can delete anything
-      if (role === "admin") {
-        await this.listingsModel.update({propertyId, location, price});
         res
-          .status(200)
-          .json({ success: true, message: "Property updated by admin" });
+          .status(404)
+          .json({ success: false, message: "Property not found" });
       }
 
-      // Users can only delete their own properties
+      // Prepare update data dynamically
+      const updateFields: { [key: string]: any } = {};
+      if (price !== undefined) updateFields.price = price;
+      if (location !== undefined) updateFields.location = location;
+      if (description !== undefined) updateFields.description = description;
+
+      if (Object.keys(updateFields).length === 0) {
+        res
+          .status(400)
+          .json({ success: false, message: "No update fields provided" });
+      }
+
+      let updatedProperty;
+
+      // Admins can update any property
+      if (role === "admin") {
+        updatedProperty = await this.listingsModel.update(
+          propertyId,
+          updateFields
+        );
+        if (!updatedProperty) {
+          res.status(404).json({
+            success: false,
+            message: "Property not found after update attempt",
+          });
+        }
+        res.status(200).json({
+          success: true,
+          message: "Property updated by admin",
+          property: updatedProperty,
+        });
+      }
+
+      // Users can only update their own properties
       if (role === "user" && property) {
         const isOwner = property.listedBy?.toString() === userId;
 
@@ -162,16 +285,23 @@ export class ListingsController {
           });
         }
 
-        await this.listingsModel.update({propertyId, location, price});
-        res
-          .status(200)
-          .json({ success: true, message: "Property updated by user" });
+        updatedProperty = await this.listingsModel.update(
+          propertyId,
+          updateFields
+        );
+        if (!updatedProperty) {
+          res.status(404).json({
+            success: false,
+            message: "Property not found after update attempt",
+          });
+        }
+        res.status(200).json({
+          success: true,
+          message: "Property updated by user",
+          property: updatedProperty,
+        });
       }
 
-      res.status(403).json({
-        success: false,
-        message: "Unauthorized action",
-      });
     } catch (error: any) {
       console.error(error);
       res.status(500).json({ success: false, message: error.message });

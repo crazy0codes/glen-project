@@ -1,18 +1,18 @@
 import { HomeView } from "@/views/homeView";
 import { useEffect, useState } from "react";
 
-export interface Property {
+export type Property = {
   _id: string;
-  url: string;
-  price: string;
+  name: string;
   location: string;
-  bookedBy: string;
-  description: string;
-  owner: {
-    email:string,
-    _id: string
-  }
-}
+  price: number;
+  url: string;
+  description?: string;
+  listedBy?: string;
+  owner?: {
+    email: string;
+  };
+};
 
 export function HomePageContainer() {
   const [properties, setProperties] = useState<Property[] | null>(null);

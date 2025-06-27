@@ -1,76 +1,129 @@
 import { Dashboard } from "@/views/dashboardView";
-import { useEffect, useState, type FormEvent } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { Property } from "./homePageContainer";
 import axios from "axios";
-
-interface Filter {
-  price: number;
-  location: string;
-}
+import { AuthContext } from "@/context/authContext";
 
 const URL = `http://localhost:3001/api/property/`;
 
-export function AdminDashboard() {
-  const user = "admin";
-  const [filter, setFilter] = useState<Filter | null>(null);
-  const [properties, setProperties] = useState<[Property] | null>(null);
+export function DashboardContainer() {
+  const context = useContext(AuthContext);
 
-  useEffect(() => {
-    getAll();
-  }, []);
-
-  async function deleteHandler(e: FormEvent<HTMLFormElement>) {
-    const res = await axios.delete(URL + propertyId);
-
-    if (!(res.status == 200)) console.log(await res.data);
-
-    const data = await res.data;
-    console.log(data);
+  if (!context) {
+    return null;
   }
 
-  async function updateHandler(e: FormEvent<HTMLFormElement>) {
-    const body = {
-      email: "madhanpanja@gmail.com",
-      id: "8iiusdu09202vlmsd92j",
-    };
-    const res = await axios.put(URL + propertyId);
-    if (!(res.status === 200)) console.log(await res.data);
+  const { user, token } = context;
 
-    const data = res.data;
-    setProperties((prev) => {
-      if (!prev) return prev;
+  const [properties, setProperties] = useState<Property[] | null>(null);
 
-      return prev.map((property) => {
-        if (property._id === data._id) {
-          return data;
-        } else {
-          return property;
-        }
-      }) as [Property];
-    });
+  useEffect(() => {
+    if (user) {
+      getAll();
+    }
+  }, [user, token]);
+
+  async function deleteHandler(propertyId: string) {
+    try {
+      const res = await axios.delete(`${URL}listing`, {
+        data: { propertyId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status === 200) {
+        console.log(res.data);
+        setProperties(
+          (prev) => prev?.filter((prop) => prop._id !== propertyId) || null
+        );
+      } else {
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.error("Error deleting property:", error);
+    }
+  }
+
+  async function updateHandler(
+    propertyId: string,
+    updatedData: Partial<Property>
+  ) {
+    try {
+      const res = await axios.patch(`${URL}listing`, {
+        propertyId,
+        ...updatedData,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status === 200) {
+        const data = res.data.property;
+        setProperties((prev) => {
+          if (!prev) return prev;
+
+          return prev.map((property) => {
+            if (property._id === data._id) {
+              return data;
+            } else {
+              return property;
+            }
+          }) as Property[];
+        });
+      } else {
+        console.log(res.data);
+      }
+    } catch (error) {
+      console.error("Error updating property:", error);
+    }
   }
 
   async function getAll() {
-    // const res = await axios.get(URL);
-    
     let res;
-    if(user === "admin") res = await axios.get(URL);
-    else res = await axios.get(URL+"")
+    if (!user) return;
 
+    if (user.role === "admin") {
+      res = await axios.get(URL);
+    } else {
+      console.log("User ID:", user.id);
+      res = await axios.get(`${URL}listedBy/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
 
-    if (!(res.status == 200)) console.log(await res.data);
+    if (!(res.status === 200)) {
+      console.log(await res.data);
+      return;
+    }
 
-    setProperties(await res.data);
-    console.log(await res.data);
+    console.log("Response data:", res.data);
+    setProperties(res.data);
   }
 
-  async function getFiltered(filter) {
-    const res = await axios.get(URL, {
-      params: {
-        filter,
+  async function getFiltered() {}
+
+  async function getHostedProperties() {
+    if (!user) return;
+    const res = await axios.get(`${URL}listedBy/${user.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     });
+    if (!(res.status === 200)) console.log(await res.data);
+    setProperties(res.data as Property[]);
   }
 
-  return <Dashboard props={updateHandler, deleteHandler, properties, user} />;
+  return (
+    <Dashboard
+      properties={properties}
+      getFiltered={getFiltered}
+      deleteHandler={deleteHandler}
+      updateHandler={updateHandler}
+      user={user?.role}
+      hosted={getHostedProperties}
+      getAll={getAll}
+    />
+  );
 }
